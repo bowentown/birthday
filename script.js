@@ -467,8 +467,9 @@
   }
 
   /* ---------------- 触发 ---------------- */
-  const nameParam = (new URLSearchParams(location.search).get('name') || '').trim().slice(0, 20);
-  const BANNER_SUB = nameParam ? `生日快乐，${nameParam}！` : '祝你生日快乐 🎂';
+  const nameParam = (new URLSearchParams(location.search).get('name') || '').trim().slice(0, 20) || '崔师傅';
+  const fromParam = (new URLSearchParams(location.search).get('from') || '').trim().slice(0, 20) || '汪师傅和桃桃桃';
+  const BANNER_SUB = `${fromParam} 祝 ${nameParam} 生日快乐 🎂`;
 
   const lastHit = Object.create(null);
   function trigger(key, px, py) {
@@ -589,7 +590,6 @@
   requestAnimationFrame(frame);
 
   /* ---------------- 首屏文案 ---------------- */
-  document.getElementById('name-line').textContent = nameParam
-    ? `今天的主角：${nameParam} 🎈`
-    : '在网址后加 ?name=TA的名字 可以定制祝福哦';
+  document.getElementById('name-line').textContent = `${fromParam} 祝 ${nameParam} 生日快乐 🎂`;
+  document.title = `🎂 ${fromParam}祝${nameParam}生日快乐`;
 })();
