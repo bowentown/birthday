@@ -444,16 +444,27 @@
     }));
   }
 
+  let lastW = 0, lastH = 0, lastDpr = 0;
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = window.innerWidth; H = window.innerHeight;
+    lastW = W; lastH = H; lastDpr = dpr;
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
+    // 显式锁定 CSS 尺寸：位图再怎么变，显示永远和视口 1:1，坐标系不会错位
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     buildBackground();
   }
   window.addEventListener('resize', resize);
   resize();
+
+  // 某些嵌入环境改视口时不发 resize 事件，每帧廉价自检一次
+  function viewportChanged() {
+    return window.innerWidth !== lastW || window.innerHeight !== lastH ||
+      Math.min(window.devicePixelRatio || 1, 2) !== lastDpr;
+  }
 
   /* ---------------- 触发 ---------------- */
   const nameParam = (new URLSearchParams(location.search).get('name') || '').trim().slice(0, 20);
@@ -531,6 +542,7 @@
   function frame(now) {
     const dt = Math.min(.05, (now - last) / 1000);
     last = now;
+    if (viewportChanged()) resize();
 
     g.fillStyle = bgGrad;
     g.fillRect(0, 0, W, H);
