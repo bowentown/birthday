@@ -467,9 +467,10 @@
   }
 
   /* ---------------- 触发 ---------------- */
-  const nameParam = (new URLSearchParams(location.search).get('name') || '').trim().slice(0, 20) || '崔师傅';
-  const fromParam = (new URLSearchParams(location.search).get('from') || '').trim().slice(0, 20) || '汪师傅和桃桃桃';
-  const BANNER_SUB = `${fromParam} 祝 ${nameParam} 生日快乐 🎂`;
+  // 专属定制，不复用：改这里即可换人
+  const NAME = '崔师傅';
+  const FROM = '汪师傅和桃桃桃';
+  const BANNER_SUB = `${FROM}祝${NAME}生日快乐 🎂`;
 
   const lastHit = Object.create(null);
   function trigger(key, px, py) {
@@ -590,6 +591,6 @@
   requestAnimationFrame(frame);
 
   /* ---------------- 首屏文案 ---------------- */
-  document.getElementById('name-line').textContent = `${fromParam} 祝 ${nameParam} 生日快乐 🎂`;
-  document.title = `🎂 ${fromParam}祝${nameParam}生日快乐`;
+  document.getElementById('name-line').textContent = `祝${NAME}生日快乐 🎂`;
+  document.title = `🎂 ${FROM}祝${NAME}生日快乐`;
 })();
