@@ -111,12 +111,41 @@
     noiseBuf = actx.createBuffer(1, len, actx.sampleRate);
     const d = noiseBuf.getChannelData(0);
     for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-    // 加载并解码整首歌
-    fetch('assets/song.mp3')
-      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); })
-      .then(ab => actx.decodeAudioData(ab))
-      .then(buf => { songBuffer = buf; assignSegments(buf.duration); setLoading(false); })
-      .catch(() => { audioFailed = true; setLoading(false); hudMsg('音频加载失败，已切换为合成音色 🎹'); });
+    // 加载并解码整首歌（带进度百分比，加载完成会明确提示）
+    loadSong();
+  }
+
+  async function loadSong() {
+    try {
+      const r = await fetch('assets/song.mp3');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const total = +r.headers.get('Content-Length') || 0;
+      let ab;
+      if (r.body && total) {
+        const reader = r.body.getReader();
+        const chunks = [];
+        let got = 0;
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          got += value.length;
+          setLoadingText(`🎵 正在加载你的歌 ${Math.min(99, Math.round(got / total * 100))}%`);
+        }
+        ab = await new Response(new Blob(chunks)).arrayBuffer();
+      } else {
+        ab = await r.arrayBuffer();
+      }
+      const buf = await actx.decodeAudioData(ab);
+      songBuffer = buf;
+      assignSegments(buf.duration);
+      setLoading(false);
+      hudMsg('🎧 你的歌已就位，尽情敲！');
+    } catch (e) {
+      audioFailed = true;
+      setLoading(false);
+      hudMsg('音频加载失败，已切换为合成音色 🎹');
+    }
   }
 
   // 按指定比例把声音送进混响
@@ -183,10 +212,19 @@
       if (!(pad.seg && playSample(pad.seg))) playMelody();
       return;
     }
-    // 字母键：优先歌曲切片，否则合成打击乐兜底
+    // 字母键：优先歌曲切片，否则合成打击乐兜底（并明确告知歌还在加载）
     if (pad.seg && playSample(pad.seg)) return;
+    if (!audioFailed && !songBuffer) hintFallback();
     perc(280 + hash(pad.idx * 3) * 2300, .13 + hash(pad.idx) * .12, .5);
     if (pad.idx % 3 === 0) pluck(PENTA_ALL[pad.idx % PENTA_ALL.length], null, .35, .22);
+  }
+
+  let lastFallbackMsg = 0;
+  function hintFallback() {
+    const now = performance.now();
+    if (now - lastFallbackMsg < 6000) return;
+    lastFallbackMsg = now;
+    hudMsg('歌曲还在路上，先来段合成音 🎹');
   }
 
   /* ---------------- 生日歌自动演奏（回车） ---------------- */
@@ -628,6 +666,7 @@
   }
 
   function setLoading(on) { document.getElementById('loading').hidden = !on; }
+  function setLoadingText(t) { const el = document.getElementById('loading'); el.hidden = false; el.textContent = t; }
 
   let msgTimer = 0;
   function hudMsg(text) {
