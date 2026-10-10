@@ -27,8 +27,9 @@
 ## 技术
 
 - 纯静态 HTML + CSS + 原生 JS，**无构建、无依赖、无框架**
-- 音频：fetch + `decodeAudioData` 解码整首歌，每个键映射一段切片（偏移 / 时长 / 变速都由确定性伪随机生成，同一键音色恒定）
-- 动画：Canvas 2D，12 种图形动画（圆环、礼花、气球、彩带、音符、流星弧线…），每个键固定配色与位置，方便形成肌肉记忆
+- 音频：fetch + `decodeAudioData` 解码整首歌，每个键映射一段切片（偏移 / 时长 / 变速都由确定性伪随机生成，同一键音色恒定）；合成音色走 ConvolverNode 算法混响
+- 动画：双画布 —— 背景层星空 + 流星，动画层"淡出擦除"渲染出辉光拖尾，霓虹质感
+- 彩带：[canvas-confetti](https://github.com/catdad/canvas-confetti)（ISC License），空格惊喜 / 开场 / 自动演奏结尾的三连彩带炮都是它
 - 移动端：触摸即演奏，`touch-action: none` 防滚动，DPR 自适应
 
 ## 目录结构
@@ -36,13 +37,14 @@
 ```
 birthday/
 ├── index.html      # 页面结构
-├── style.css       # 样式（开场遮罩 / HUD）
+├── style.css       # 样式（开场遮罩 / HUD / 按键提示）
 ├── script.js       # 键位映射 / 音频切片引擎 / 全部动画
 └── assets/
-    └── song.mp3    # 歌曲素材（替换同名文件即可换歌）
+    ├── song.mp3                      # 歌曲素材（替换同名文件即可换歌）
+    └── vendor/confetti.browser.min.js  # canvas-confetti（ISC License）
 ```
 
 ## 致谢
 
-交互形式致敬 [patatap.com](https://patatap.com)（Jono Brandel × Lullatone）。
-本仓库全部代码从零手写，仅借鉴"按键出声出动画"的玩法，未使用其任何素材。
+- 交互形式致敬 [patatap.com](https://patatap.com)（Jono Brandel × Lullatone），本仓库全部代码从零手写，仅借鉴"按键出声出动画"的玩法，未使用其任何素材
+- 彩带效果使用 [canvas-confetti](https://github.com/catdad/canvas-confetti)（ISC License，作者 catdad），按协议随仓库分发

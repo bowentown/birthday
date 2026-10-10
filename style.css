@@ -175,4 +175,65 @@ body {
   .sub { font-size: 13px; }
   #hud { font-size: 11px; }
   .cake { font-size: 62px; }
+  .keys span { width: 28px; height: 28px; font-size: 12px; }
+}
+
+/* ---------- 动画层画布 ---------- */
+#fx {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ---------- 开场页分层浮现 ---------- */
+#intro h1   { animation: fadeUp .7s .05s ease both; }
+.name       { animation: fadeUp .7s .18s ease both; }
+.sub        { animation: fadeUp .7s .32s ease both; }
+.keys       { animation: fadeUp .7s .46s ease both; }
+.hint {
+  animation: fadeUp .7s .6s ease both, pulse 1.7s ease-in-out 1.4s infinite;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 漂浮按键提示 ---------- */
+.keys {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.keys span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  background: rgba(255, 255, 255, .07);
+  font-weight: 700;
+  font-size: 14px;
+  color: rgba(255, 255, 255, .85);
+  animation: keyBob 2.2s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes keyBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* ---------- 闲置提示脉冲 ---------- */
+#hud.nudge {
+  color: rgba(255, 255, 255, .85);
+  animation: hudPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes hudPulse {
+  0%, 100% { opacity: .55; }
+  50%      { opacity: 1; }
 }

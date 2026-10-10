@@ -11,6 +11,7 @@
 <body>
 
 <canvas id="stage"></canvas>
+<canvas id="fx"></canvas>
 
 <div id="intro">
   <div class="cake">🎂</div>
@@ -20,6 +21,9 @@
     像 <a href="https://patatap.com" target="_blank" rel="noopener">patatap</a> 一样，
     每个键都有专属的声音和动画 —— 用键盘为崔师傅敲出一场独一无二的生日演奏
   </p>
+  <div class="keys" aria-hidden="true">
+    <span style="--d:0s">A</span><span style="--d:.2s">♪</span><span style="--d:.4s">Q</span><span style="--d:.6s">7</span><span style="--d:.8s">Z</span><span style="--d:1s">♫</span><span style="--d:1.2s">P</span>
+  </div>
   <p class="hint">点击任意处 · 或按任意键开始</p>
 </div>
 
@@ -29,6 +33,7 @@
 <div id="loading" hidden>正在加载音乐…</div>
 <div id="msg"></div>
 
+<script src="assets/vendor/confetti.browser.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
