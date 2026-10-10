@@ -117,7 +117,7 @@
 
   async function loadSong() {
     try {
-      const r = await fetch('assets/song.mp3');
+      const r = await fetch('assets/song.m4a');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const total = +r.headers.get('Content-Length') || 0;
       let ab;

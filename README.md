@@ -21,8 +21,8 @@
 
 - **祝福对象**：专属定制版 —— 开场显示「祝崔师傅生日快乐 🎂」，惊喜横幅显示「汪师傅和桃桃桃祝崔师傅生日快乐 🎂」
 - **换人**：改动 `script.js` 顶部的 `NAME`（寿星）和 `FROM`（祝福人）两个常量即可
-- **换歌**：用任意 mp3 覆盖 `assets/song.mp3` 即可，页面会把整首歌运行时切成 26 片分给字母键。
-- 歌曲没加载好（或加载失败）时会自动切换成 WebAudio 合成音色兜底，永远不会冷场。
+- **换歌**：替换 `assets/song.m4a` 即可（页面实际加载的是 128kbps AAC 轻量版，加载快）；原始 320kbps 的 `assets/song.mp3` 仍保留在仓库里作母带。若用其他格式，记得同步改 `script.js` 里的 fetch 地址。
+- 歌曲没加载好（或加载失败）时会自动切换成 WebAudio 合成音色兜底，永远不会冷场；加载进度会显示在左下角。
 
 ## 技术
 
@@ -40,7 +40,8 @@ birthday/
 ├── style.css       # 样式（开场遮罩 / HUD / 按键提示）
 ├── script.js       # 键位映射 / 音频切片引擎 / 全部动画
 └── assets/
-    ├── song.mp3                      # 歌曲素材（替换同名文件即可换歌）
+    ├── song.m4a                      # 页面实际加载的音频（128kbps AAC，加载快）
+    ├── song.mp3                      # 原始 320kbps 母带（仓库保留）
     └── vendor/confetti.browser.min.js  # canvas-confetti（ISC License）
 ```
 
