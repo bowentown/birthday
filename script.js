@@ -116,36 +116,43 @@
   }
 
   async function loadSong() {
-    try {
-      const r = await fetch('assets/song.m4a');
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const total = +r.headers.get('Content-Length') || 0;
-      let ab;
-      if (r.body && total) {
-        const reader = r.body.getReader();
-        const chunks = [];
-        let got = 0;
-        for (;;) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          chunks.push(value);
-          got += value.length;
-          setLoadingText(`🎵 正在加载你的歌 ${Math.min(99, Math.round(got / total * 100))}%`);
+    // 主源失败时自动切换 jsDelivr 镜像（国内访问通常更快）
+    const sources = [
+      'assets/song.m4a',
+      'https://cdn.jsdelivr.net/gh/bowentown/birthday@main/assets/song.m4a',
+    ];
+    for (const url of sources) {
+      try {
+        const r = await fetch(url);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const total = +r.headers.get('Content-Length') || 0;
+        let ab;
+        if (r.body && total) {
+          const reader = r.body.getReader();
+          const chunks = [];
+          let got = 0;
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            got += value.length;
+            setLoadingText(`🎵 正在加载你的歌 ${Math.min(99, Math.round(got / total * 100))}%`);
+          }
+          ab = await new Response(new Blob(chunks)).arrayBuffer();
+        } else {
+          ab = await r.arrayBuffer();
         }
-        ab = await new Response(new Blob(chunks)).arrayBuffer();
-      } else {
-        ab = await r.arrayBuffer();
-      }
-      const buf = await actx.decodeAudioData(ab);
-      songBuffer = buf;
-      assignSegments(buf.duration);
-      setLoading(false);
-      hudMsg('🎧 你的歌已就位，尽情敲！');
-    } catch (e) {
-      audioFailed = true;
-      setLoading(false);
-      hudMsg('音频加载失败，已切换为合成音色 🎹');
+        const buf = await actx.decodeAudioData(ab);
+        songBuffer = buf;
+        assignSegments(buf.duration);
+        setLoading(false);
+        hudMsg('🎧 你的歌已就位，尽情敲！');
+        return;
+      } catch (e) { /* 换下一个源 */ }
     }
+    audioFailed = true;
+    setLoading(false);
+    hudMsg('音频加载失败，已切换为合成音色 🎹');
   }
 
   // 按指定比例把声音送进混响
